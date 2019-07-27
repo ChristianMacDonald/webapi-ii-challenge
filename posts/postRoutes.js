@@ -17,6 +17,23 @@ router.post('/', (req, res) => {
     }
 })
 
+router.post('/:id/comments', (req, res) => {
+    if (req.body.text) {
+        db.insertComment({
+            text: req.body.text,
+            post_id: req.params.id
+        }).then(comment => {
+            db.findCommentById(comment.id).then(comment => {
+                res.status(201).json(comment);
+            });
+        }).catch(error => {
+            res.status(500).json({ error: 'There was an error while saving the comment to the database.' });
+        });
+    } else {
+        res.status(400).json({ errorMessage: 'Please provide text for the comment.' });
+    }
+})
+
 router.get('/', (req, res) => {
     db.find().then(posts => {
         console.log(posts);
